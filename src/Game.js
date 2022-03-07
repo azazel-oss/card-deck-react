@@ -22,10 +22,18 @@ class Game extends Component {
   }
 
   async handleCardDraw() {
+    if (this.state.isDeckEmpty) {
+      return;
+    }
     const newCard = await axios.get(
       `https://deckofcardsapi.com/api/deck/${this.state.deck_id}/draw/`
     );
-    console.log(newCard);
+    if (!newCard.data.success) {
+      this.setState({
+        isDeckEmpty: true,
+      });
+      return;
+    }
     this.setState((prevState) => {
       return {
         deck: [
@@ -35,7 +43,6 @@ class Game extends Component {
             image: newCard.data.cards[0].image,
           },
         ],
-        isDeckEmpty: newCard.data.remaining === 0 ? true : false,
       };
     });
     console.log("Card Drawn");
